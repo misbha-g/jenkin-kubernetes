@@ -18,7 +18,13 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}")
+                     // Define the image name and tag
+                    def imageName = "demo-kubernetes"
+                    def imageTag = "latest"
+                    def dockerImage = "${imageName}:${imageTag}"
+
+                    // Build the Docker image
+                    sh "docker build -t ${dockerImage} ."
                 }
             }
         }
@@ -27,7 +33,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://${DOCKER_REGISTRY}', 'docker-registry-credentials') {
-                        docker.image("${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push()
+                        docker.image("${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:latest").push()
                     }
                 }
             }
